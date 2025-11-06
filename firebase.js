@@ -94,6 +94,35 @@ export async function eliminarMascota(email, idMascota) {
 }
 
 /* ---------------------------------------------------------
+   ✅ OBTENER MASCOTA POR ID GLOBALMENTE (para QR)
+   --------------------------------------------------------- */
+export async function obtenerMascotaPorId(idMascotaBuscada) {
+  try {
+    // Obtener todos los usuarios
+    const usuariosSnap = await getDocs(collection(db, "usuarios"));
+    
+    for (const usuarioDoc of usuariosSnap.docs) {
+      const mascotasCol = collection(db, "usuarios", usuarioDoc.id, "mascotas");
+      const mascotasSnap = await getDocs(mascotasCol);
+
+      for (const mascotaDoc of mascotasSnap.docs) {
+        if (mascotaDoc.id === idMascotaBuscada) {
+          console.log("✅ Mascota encontrada en usuario:", usuarioDoc.id);
+          return { id: mascotaDoc.id, ...mascotaDoc.data() };
+        }
+      }
+    }
+
+    console.warn("⚠️ No se encontró ninguna mascota con ID:", idMascotaBuscada);
+    return null;
+
+  } catch (error) {
+    console.error("❌ Error buscando mascota global:", error);
+    return null;
+  }
+}
+
+/* ---------------------------------------------------------
    ✅ STORAGE (FOTOS)
    --------------------------------------------------------- */
 
@@ -147,6 +176,7 @@ window.firebaseDog = {
   actualizarMascota,
   cargarMascotas,
   eliminarMascota,
+  obtenerMascotaPorId,
 
   registrarCita,
   cargarCitas,
