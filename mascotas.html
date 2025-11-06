@@ -607,7 +607,6 @@ window.eliminarMascota = eliminarMascota;
           actualizarRazas(tipo);
           m.mascota = tipo;
           m.raza = ""; // reiniciar raza si se cambia tipo
-          guardarMascota(i);
         });
 
         const uploadInput = div.querySelector(`#uploadPet${i}`);
@@ -622,7 +621,6 @@ window.eliminarMascota = eliminarMascota;
              ...mascotas[i],     // ← mantiene codigo, qrFecha, id, etc.
              foto: r.target.result
              };
-             guardarMascota(i);  // ✅ sube foto a Firebase automáticamente
             };
             reader.readAsDataURL(file);
           }
@@ -690,4 +688,5 @@ window.eliminarMascota = eliminarMascota;
     });
   </script>
 </body>
+
 </html>
