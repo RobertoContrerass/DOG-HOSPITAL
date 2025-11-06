@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dog Hospital - Mascota QR</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #013129, #0b9988);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .tarjeta {
+      background: rgba(0, 0, 0, 0.25);
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 0 1rem rgba(0, 0, 0, 0.4);
+      width: 22rem;
+      max-width: 90%;
+      animation: aparecer 0.6s ease;
+    }
+
+    .tarjeta img {
+      width: 8rem;
+      height: 8rem;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 1rem;
+      border: 3px solid #00e6c2;
+      background-color: white;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      color: #00e6c2;
+    }
+
+    p {
+      margin: 0.4rem 0;
+      font-size: 1rem;
+    }
+
+    .error {
+      color: #ff6b6b;
+      font-size: 1.1rem;
+    }
+
+    .qr {
+      margin-top: 1.5rem;
+      background: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      display: inline-block;
+    }
+
+    @keyframes aparecer {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🐶 Ficha de Mascota</h1>
+  <div id="info">
+    <p>Cargando información...</p>
+  </div>
+
+  <script type="module" src="firebase.js"></script>
+  <script src="qrcodejs-master/qrcode.min.js"></script>
+
+  <script type="module">
+    const info = document.getElementById("info");
+
+    import { obtenerMascotaPorId } from "./firebase.js";
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    if (!id) {
+      info.innerHTML = `<p class="error">❌ No se proporcionó un ID de mascota.</p>`;
+    } else {
+      const mascota = await obtenerMascotaPorId(id);
+
+      if (!mascota) {
+        info.innerHTML = `<p class="error">⚠️ No se encontró ninguna mascota con ese ID.</p>`;
+      } else {
+        info.innerHTML = `
+          <div class="tarjeta">
+            ${mascota.foto 
+              ? `<img src="${mascota.foto}" alt="Foto de ${mascota.nombre}">`
+              : `<img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Mascota sin foto">`}
+            <h2>${mascota.nombre} 🐾</h2>
+            <p><strong>Tipo:</strong> ${mascota.mascota || "N/A"}</p>
+            <p><strong>Raza:</strong> ${mascota.raza || "N/A"}</p>
+            <p><strong>Edad:</strong> ${mascota.edad || "N/A"}</p>
+            <p><strong>Código:</strong> ${mascota.codigo || "Sin código"}</p>
+            <div id="qr" class="qr"></div>
+          </div>
+        `;
+
+        // 🔹 Generar nuevamente su QR (por si alguien quiere guardarlo)
+        new QRCode(document.getElementById("qr"), {
+          text: window.location.href,
+          width: 150,
+          height: 150,
+          colorDark: "#000",
+          colorLight: "#fff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      }
+    }
+  </script>
+</body>
+</html>
