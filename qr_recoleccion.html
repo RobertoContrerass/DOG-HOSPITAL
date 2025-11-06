@@ -68,21 +68,21 @@
 
     .icon-dog-left { 
       left: 1rem; 
-      background-image: url("modo_oscuro.png"); 
+      background-image: url("modo_oscuro.PNG"); 
     }
 
     .icon-dog-right { 
       right: 1rem; 
-      background-image: url("modo_oscuro.png"); 
+      background-image: url("modo_oscuro.PNG"); 
     }
 
     /* Cuando el cuerpo tenga la clase .day, cambia a las imágenes de día */
     body.day .icon-dog-left { 
-      background-image: url("modo_claro.png"); 
+      background-image: url("modo_claro.PNG"); 
     }
 
     body.day .icon-dog-right { 
-      background-image: url("modo_claro.png"); 
+      background-image: url("modo_claro.PNG"); 
     }
 
     .rotate { 
@@ -379,17 +379,14 @@
       </div>
     `;
 
-    const datosQR = {
-  id: m.id,
-  nombre: m.nombre,
-  mascota: m.mascota,
-  raza: m.raza,
-  edad: m.edad,
-  codigo: m.codigo
-};
+   // URL base del sitio (ajústala según tu hosting o ruta)
+const baseURL = "https://robertocontrerass.github.io/DOG-HOSPITAL/mascotas_qr.html";
+
+// Crear el enlace directo con el ID de la mascota
+const urlMascota = `${baseURL}?id=${m.id}`;
 
 new QRCode(document.getElementById(`qr-${m.codigo}`), {
-  text: JSON.stringify(datosQR),
+  text: urlMascota,
   width: 180,
   height: 180,
   colorDark: "#000",
@@ -443,4 +440,3 @@ new QRCode(document.getElementById(`qr-${m.codigo}`), {
   </script>
 </body>
 </html>
-
