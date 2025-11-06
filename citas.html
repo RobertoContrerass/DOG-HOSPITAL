@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dog Hospital - Cita Confirmada</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(120deg, #013129 100%);
+      color: white;
+      transition: background 0.5s ease, color 0.5s ease;
+      overflow: hidden;
+    }
+
+    body.day {
+      background: linear-gradient(120deg, rgb(11, 153, 136) 100%);
+      color: #013129;
+    }
+
+    .logo-dog-hospital {
+      position: absolute;
+      top: 1rem;
+      left: calc(5rem + 1.5rem); /* 5rem = ancho sidebar izquierda */
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      z-index: 1000;
+      user-select: none;
+    }
+
+    /* Color inicial (modo oscuro) */
+    .dog-word {
+      color: #00e6c2;   /* un turquesa brillante */
+      transition: color 0.5s ease;
+    }
+
+    /* Cuando el modo día está activo: cambiar DOG a otro color */
+    body.day .dog-word {
+      color: #013129;  /* verde oscuro */
+    }
+
+    .hospital-word {
+      color: white;
+    }
+
+    /* ICONOS DE PERROS */
+    .icon-dog-left, .icon-dog-right {
+      position: absolute;
+      top: 1rem;
+      width: 3rem;
+      height: 3rem;
+      background-size: contain;
+      background-repeat: no-repeat;
+      transition: transform 0.8s ease;
+    }
+
+    .icon-dog-left { left: 1rem; background-image: url("modo_oscuro.PNG"); }
+    .icon-dog-right { right: 1rem; background-image: url("modo_oscuro.PNG"); }
+
+    body.day .icon-dog-left { background-image: url("modo_claro.PNG"); }
+    body.day .icon-dog-right { background-image: url("modo_claro.PNG"); }
+
+    .rotate { transform: rotate(360deg); }
+
+    /* SIDEBARS */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 5rem;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 1rem 0;
+      gap: 3rem;
+    }
+
+    .sidebar.left { border-right: 0.125rem solid rgba(255,255,255,0.2); }
+    .sidebar.right { border-left: 0.125rem solid rgba(255,255,255,0.2); }
+
+    .sidebar img {
+      width: 3rem;
+      height: 3rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .sidebar img:hover {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+
+    /* CONTENEDOR CENTRAL */
+    .central-container {
+      width: 60%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .titulo {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 0rem;
+    }
+
+    /* TARJETA DE LA CITA */
+    .tarjeta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(0.3rem);
+      padding: 2rem;
+      border-radius: 1.2rem;
+      width: 25rem;
+      box-shadow: 0 0 1rem rgba(0,0,0,0.4);
+      transition: 0.4s ease;
+      margin-bottom: 0.5rem;
+    }
+
+    body.day .tarjeta {
+      background: rgba(0,0,0,0.08);
+      color: #013129;
+    }
+
+    .tarjeta:hover {
+      transform: scale(1.03);
+    }
+
+    .dato {
+      font-size: 1.1rem;
+      margin: 0.6rem 0;
+    }
+
+    /* BOTONES */
+    .botones { 
+      display: flex; 
+      gap: 1rem; 
+      justify-content: center; 
+      margin-top: 1rem; 
+    } 
+    
+    .btn { 
+      padding: 0.9rem 1.5rem; 
+      border: none; 
+      border-radius: 0.5rem; 
+      font-size: 1rem; 
+      cursor: pointer; 
+      font-weight: bold; 
+      transition: 0.3s; 
+      width: 10rem; 
+    } 
+    
+    .confirmar { 
+      background: #00bfa5; 
+      color: white; 
+    } 
+    
+    .confirmar:hover { 
+      background:#008f7a; 
+    } 
+    
+    .cancelar { 
+      background: #b71c1c; 
+      color:white; 
+    } 
+    
+    .cancelar:hover { 
+      background: #7f0000; 
+    }
+
+    #lista-citas {
+       width: 90%;
+      margin-top: 3rem;
+      display: flex;
+      flex-direction: row;     /* ✅ ahora horizontal */
+      gap: 2rem;
+      overflow-x: auto;        /* ✅ scroll horizontal suave */
+      padding-bottom: 1rem;
+      scrollbar-width: thin;
+    }
+
+    .tarjeta-cita {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 22rem;       /* ✅ para que las tarjetas tengan tamaño fijo */
+    }
+
+    .btn-eliminar {
+      margin-top: 0.7rem;
+      padding: 0.6rem 1rem;
+      background: #b71c1c;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-eliminar:hover {
+      background: #ff4d4d;
+    }
+
+    .foto-mascota {
+      width: 6rem;
+      height: 6rem;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 1rem;
+      border: 2px solid white;
+    }
+
+    .icono-servicio {
+      width: 4rem;
+      height: 4rem;
+      margin-left: 1rem;
+    }    
+
+    /* MODO DÍA/NOCHE */
+    .mode-toggle {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+      z-index: 9999; /* más alto que cualquier otro elemento */
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .mode-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      pointer-events: auto;
+      background-size: cover;
+      background-color: transparent;
+      transition: transform 0.3s ease;
+    }
+
+    .moon { background-image: url("https://cdn-icons-png.flaticon.com/512/581/581601.png"); }
+    .sun { background-image: url("https://cdn-icons-png.flaticon.com/512/869/869869.png"); }
+
+    .mode-btn:hover { transform: scale(1.15); }
+
+    .sun:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 1rem 1rem rgb(11, 153, 136);
+      background-color: rgb(11, 153, 136);
+      border: 0.125rem solid rgb(165, 157, 0);
+    }
+    
+    .moon:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 1rem 1rem #013129;
+      background-color: #013129;
+      border: 0.125rem solid #000351;
+    }
+
+    /* 📱 Responsive */
+    @media (max-width: 48rem) {
+      body {
+        flex-direction: column;
+      }
+
+      .logo-dog-hospital {
+        left: 1rem;
+        top: 5rem;
+        font-size: 1.6rem;
+      }
+
+      .sidebar {
+        flex-direction: row;
+        width: 100%;
+        height: auto;
+        padding: 0.5rem 0;
+      }
+
+      .sidebar.left,
+      .sidebar.right {
+        border: none;
+      }
+
+      .main-content {
+        order: -1;
+        flex: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="icon-dog-left"></div>
+  <div class="icon-dog-right"></div>
+
+  <!-- SIDEBAR IZQUIERDA -->
+  <div class="sidebar left">
+    <a href="consultas.html"><img src="consultas.png"></a>
+    <a href="citas.html"><img src="citas.png"></a>
+    <a href="qr_recoleccion.html"><img src="QR-DOG-HOSPITAL-463451.png"></a>
+  </div>
+
+  <!-- CONTENIDO CENTRAL -->
+   <div class="logo-dog-hospital">
+      <span class="dog-word">DOG</span> <span class="hospital-word">HOSPITAL</span>
+    </div>
+    
+  <div class="central-container">
+    <div class="titulo">✅ Cita Confirmada</div>
+
+    <div id="lista-citas"></div>
+
+    <div class="botones">
+      <button class="btn confirmar" id="btn-ok">Aceptar</button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR DERECHA -->
+  <div class="sidebar right">
+    <a href="perfil.html"><img src="perfil.png"></a>
+    <a href="mascotas.html"><img src="https://cdn-icons-png.flaticon.com/512/616/616408.png"></a>
+    <a href="index.html"><img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png"></a>
+  </div>
+
+  <!-- MODO DÍA/NOCHE -->
+  <div class="mode-toggle">
+    <button class="mode-btn moon" id="night-mode"></button>
+    <button class="mode-btn sun" id="day-mode"></button>
+  </div>
+
+ <script type="module" src="firebase.js" id="firebaseScript"></script>
+
+<script>
+document.getElementById("firebaseScript").addEventListener("load", async () => {
+  const body = document.body;
+  const nightBtn = document.getElementById("night-mode");
+  const dayBtn = document.getElementById("day-mode");
+  const iconLeft = document.querySelector(".icon-dog-left");
+  const iconRight = document.querySelector(".icon-dog-right");
+  const contenedor = document.getElementById("lista-citas");
+  const btnOk = document.getElementById("btn-ok");
+
+  /* ===========================
+       CARGAR DATOS DE USUARIO
+  ============================ */
+  let usuarioActivo = JSON.parse(localStorage.getItem("usuarioActivo"));
+  if (!usuarioActivo) {
+    alert("Inicia sesión primero.");
+    window.location.href = "index.html";
+    return;
+  }
+
+  // Intentar cargar mascotas desde Firebase
+  let mascotas = [];
+  try {
+    mascotas = await firebaseDog.cargarMascotas(usuarioActivo.email);
+    if (mascotas && mascotas.length > 0) {
+      usuarioActivo.mascotas = mascotas;
+      localStorage.setItem("usuarioActivo", JSON.stringify(usuarioActivo));
+    } else {
+      mascotas = usuarioActivo.mascotas || [];
+    }
+  } catch (err) {
+    console.warn("Error cargando mascotas desde Firebase, usando LocalStorage:", err);
+    mascotas = usuarioActivo.mascotas || [];
+  }
+
+  /* ===========================
+       MOSTRAR CITAS
+  ============================ */
+  contenedor.innerHTML = "<p>Cargando tus citas...</p>";
+  let citas = [];
+
+  try {
+    citas = await firebaseDog.cargarCitas(usuarioActivo.email);
+    if (!citas || citas.length === 0) {
+      // Si no hay citas en Firebase, intentar localStorage
+      citas = JSON.parse(localStorage.getItem("citas")) || [];
+    } else {
+      localStorage.setItem("citas", JSON.stringify(citas));
+    }
+  } catch (err) {
+    console.warn("Error al cargar citas desde Firebase, usando LocalStorage:", err);
+    citas = JSON.parse(localStorage.getItem("citas")) || [];
+  }
+
+  if (!citas || citas.length === 0) {
+    contenedor.innerHTML = "<p>No hay citas registradas aún.</p>";
+    return;
+  }
+
+  contenedor.innerHTML = "";
+  citas.forEach((cita) => {
+    const tarjeta = document.createElement("div");
+    tarjeta.classList.add("tarjeta-cita");
+
+    // Buscar la mascota en la lista por nombre o ID
+    const nombreMascota = cita.mascota?.nombre || cita.mascota || "Sin nombre";
+    const mascotaEncontrada = mascotas.find(
+      (m) =>
+        m.nombre?.trim().toLowerCase() === nombreMascota.trim().toLowerCase()
+    );
+
+    // Foto de la mascota o una imagen genérica
+    const fotoMascota =
+      mascotaEncontrada?.foto ||
+      "https://cdn-icons-png.flaticon.com/512/616/616408.png";
+    const icono = cita.iconoServicio || "icon1.png";
+
+    tarjeta.innerHTML = `
+      <div class="tarjeta">
+        <img src="${fotoMascota}" class="foto-mascota" alt="Foto de ${nombreMascota}">
+        <div class="tarjeta-info">
+          <h3>${nombreMascota}</h3>
+          <p><strong>Servicio:</strong> ${cita.servicio || "-"}</p>
+          <p><strong>Veterinaria:</strong> ${cita.veterinaria || "-"}</p>
+          <p><strong>Fecha:</strong> ${cita.fecha || "-"}</p>
+        </div>
+        <img src="${icono}" alt="${cita.servicio || "Servicio"}" class="icono-servicio">
+      </div>
+      <button class="btn-eliminar" data-id="${cita.id}">Eliminar cita</button>
+    `;
+
+    contenedor.appendChild(tarjeta);
+  });
+
+  /* ===========================
+       ELIMINAR CITA
+  ============================ */
+  contenedor.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("btn-eliminar")) {
+      const idCita = e.target.dataset.id;
+      if (!confirm("¿Seguro que deseas eliminar esta cita?")) return;
+      try {
+        await firebaseDog.eliminarCita(usuarioActivo.email, idCita);
+        let citasGuardadas = JSON.parse(localStorage.getItem("citas")) || [];
+        citasGuardadas = citasGuardadas.filter(c => c.id !== idCita);
+        localStorage.setItem("citas", JSON.stringify(citasGuardadas));
+
+        // Eliminar del DOM
+        e.target.closest(".tarjeta-cita").remove();
+
+    if (contenedor.children.length === 0) {
+      contenedor.innerHTML = "<p>No hay citas registradas aún.</p>";
+    }
+
+    alert("Cita eliminada correctamente");
+
+      } catch (err) {
+        console.error("Error al eliminar cita:", err);
+        alert("No se pudo eliminar la cita.");
+      }
+    }
+  });
+
+  /* ===========================
+         BOTONES Y MODO
+  ============================ */
+  btnOk.onclick = () => {
+    window.location.href = "consultas.html";
+  };
+
+  dayBtn.onclick = () => {
+    body.classList.add("day");
+    localStorage.setItem("themeMode", "day");
+    iconLeft.classList.add("rotate");
+    iconRight.classList.add("rotate");
+    setTimeout(() => {
+      iconLeft.classList.remove("rotate");
+      iconRight.classList.remove("rotate");
+    }, 800);
+  };
+
+  nightBtn.onclick = () => {
+    body.classList.remove("day");
+    localStorage.setItem("themeMode", "night");
+    iconLeft.classList.add("rotate");
+    iconRight.classList.add("rotate");
+    setTimeout(() => {
+      iconLeft.classList.remove("rotate");
+      iconRight.classList.remove("rotate");
+    }, 800);
+  };
+
+  const savedMode = localStorage.getItem("themeMode");
+  if (savedMode === "day") body.classList.add("day");
+});
+  </script>
+</body>
+</html>

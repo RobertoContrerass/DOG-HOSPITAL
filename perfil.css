@@ -1,0 +1,179 @@
+/* ===== ESTILOS GENERALES ===== */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  background: var(--bg-color);
+  color: var(--text-color);
+  transition: background 0.4s, color 0.4s;
+}
+
+/* Colores modo día/noche */
+body.day {
+  --bg-color: #c8f4f1;
+  --text-color: #043a3a;
+  --card-bg: #f0fdfa;
+  --btn-color: #009688;
+}
+
+body.night {
+  --bg-color: #003333;
+  --text-color: #e0f2f1;
+  --card-bg: #004d4d;
+  --btn-color: #4dd0e1;
+}
+
+/* ===== ENCABEZADO ===== */
+header {
+  margin-top: 15px;
+}
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color);
+  letter-spacing: 2px;
+}
+.brand { color: var(--btn-color); }
+.accent { font-style: italic; }
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.profile-container {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  max-width: 1100px;
+  margin-top: 10px;
+}
+
+/* ===== PANEL LATERAL ===== */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100px;
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 20px 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  transition: background 0.4s;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 20px;
+}
+
+/* Botones de navegación */
+.nav-btn {
+  background: none;
+  border: none;
+  margin: 10px 0;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.3s;
+  padding: 8px;
+  border-radius: 12px;
+}
+.nav-btn:hover {
+  background: var(--btn-color);
+  transform: scale(1.1);
+}
+.nav-btn img {
+  width: 30px;
+  height: 30px;
+}
+
+/* Botón de modo día/noche */
+.mode-btn {
+  font-size: 1.5rem;
+  background: var(--btn-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+  transition: transform 0.3s, background 0.4s;
+}
+.mode-btn:hover {
+  transform: rotate(20deg) scale(1.1);
+  background: #fff176;
+  color: #333;
+}
+
+/* ===== CONTENIDO CENTRAL ===== */
+.profile-content {
+  flex: 1;
+  text-align: center;
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 25px;
+  margin: 0 15px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+/* Foto de perfil */
+.photo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.profile-photo {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--btn-color);
+  transition: transform 0.3s;
+}
+.profile-photo:hover {
+  transform: scale(1.05);
+}
+
+/* Formulario */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.row {
+  display: flex;
+  gap: 10px;
+}
+input {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: white;
+  color: #333;
+  transition: border 0.3s, background 0.3s;
+}
+input:focus {
+  border-color: var(--btn-color);
+  background: #f9f9f9;
+  outline: none;
+}
+
+/* Botón principal */
+.edit-btn {
+  margin-top: 10px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--btn-color);
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+.edit-btn:hover {
+  background: #00796b;
+  transform: scale(1.05);
+}

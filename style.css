@@ -1,0 +1,238 @@
+ * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(120deg, #013129 50%, #1da192 100%);
+      background-size: 200% 200%;
+      animation: gradientMove 10s ease infinite;
+      transition: background 0.5s ease;
+      overflow: hidden;
+    }
+
+    /* Animación de desplazamiento suave del fondo */
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Versión invertida para modo noche */
+    body.day {
+      background: linear-gradient(120deg, rgb(11, 153, 136) 50%, #013129 100%);
+      background-size: 200% 200%;
+      animation: gradientMove 10s ease infinite;
+    }
+
+    .login-container {
+      width: 380px;
+      background: rgba(255, 255, 255, 0.112);
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.56);
+      text-align: center;
+      position: relative;
+      transition: background 0.3s ease, transform 0.5s ease;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .icon-dog-left,
+    .icon-dog-right {
+      position: absolute;
+      top: 15px;
+      width: 45px;
+      height: 45px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      transition: transform 0.8s ease;
+    }
+
+    .icon-dog-left {
+      left: 15px;
+      background-image: url("modo_oscuro.PNG");
+    }
+
+    .icon-dog-right {
+      right: 15px;
+      background-image: url("modo_oscuro.PNG");
+    }
+
+    /* Cuando el cuerpo tenga la clase .day, cambia a las imágenes de día */
+    body.day .icon-dog-left {
+      background-image: url("modo_claro.PNG");
+    }
+
+    body.day .icon-dog-right {
+      background-image: url("modo_claro.PNG");
+    }
+
+    h1 {
+      color: #fff;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 30px;
+      transition: color 0.3s ease;
+    }
+
+    h1 span {
+      color: #80cbc4;
+      font-style: italic;
+    }
+
+    .user-icon {
+      width: 110px;
+      height: 110px;
+      background: #00796b;
+      border-radius: 50%;
+      margin: 0 auto 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .user-icon::before {
+      content: "";
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #e0f2f1;
+      position: relative;
+      top: -25px;
+    }
+
+    .user-icon::after {
+      content: "";
+      width: 70px;
+      height: 35px;
+      border-radius: 50% 50% 0 0;
+      background: #e0f2f1;
+      position: absolute;
+      top: 55px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.85);
+      font-size: 14px;
+      outline: none;
+      text-align: center;
+    }
+
+    button {
+      width: 100%;
+      background: #00695c;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #004d40;
+      transform: scale(1.05);
+    }
+
+    .mode-toggle {
+      position: absolute;
+      bottom: 5px;
+      right: 2px;
+      display: flex;
+      gap: 300px;
+    }
+
+    .mode-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-color: transparent;
+      transition: transform 0.4s ease;
+    }
+
+    .mode-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .sun:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 15px 5px rgb(11, 153, 136);
+      background-color: rgb(11, 153, 136);
+      border: 2px solid rgb(202, 192, 3);
+     }
+
+    .moon:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 15px 5px #013129;
+      background-color: #013129;
+      border: 2px solid #000351;
+     }
+
+
+    .moon {
+      background-image: url("https://cdn-icons-png.flaticon.com/512/581/581601.png");
+    }
+
+    .sun {
+      background-image: url("https://cdn-icons-png.flaticon.com/512/869/869869.png");
+    }
+
+    .rotate {
+      transform: rotate(360deg);
+    }
+
+    .welcome-message {
+      position: absolute;
+      top: 160px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      padding: 10px 25px;
+      border-radius: 25px;
+      font-size: 16px;
+      opacity: 0;
+      animation: fadeDown 3s ease forwards;
+    }
+
+    @keyframes fadeDown {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -30px);
+      }
+      50% {
+        opacity: 1;
+        transform: translate(-50%, 10px);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -60px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        width: 90%;
+      }
+    }

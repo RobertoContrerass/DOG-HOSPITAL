@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dog Hospital - Consultas</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(120deg, #013129 100%);
+      color: white;
+      transition: background 0.5s ease, color 0.5s ease;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    body.day {
+      background: linear-gradient(120deg, rgb(11, 153, 136) 100%);
+      color: #013129;
+    }
+
+    .logo-dog-hospital {
+      position: absolute;
+      font-weight: bold;
+      top: 1rem;
+      left: calc(5rem + 1.5rem); /* 5rem = ancho sidebar izquierda */
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      z-index: 1000;
+      user-select: none;
+    }
+
+    /* Color inicial (modo oscuro) */
+    .dog-word {
+      color: #00e6c2;   /* un turquesa brillante */
+      transition: color 0.5s ease;
+    }
+
+    /* Cuando el modo día está activo: cambiar DOG a otro color */
+    body.day .dog-word {
+      color: #013129;  /* verde oscuro */
+    }
+
+    .hospital-word {
+      color: white;
+    }
+
+    .icon-dog-left, .icon-dog-right {
+      position: absolute;
+      top: 1rem;
+      width: 3rem;
+      height: 3rem;
+      background-size: contain;
+      background-repeat: no-repeat;
+      transition: transform 0.8s ease;
+    }
+
+    .icon-dog-left { 
+      left: 1rem; 
+      background-image: url("modo_oscuro.PNG"); 
+    }
+
+    .icon-dog-right { 
+      right: 1rem; 
+      background-image: url("modo_oscuro.PNG"); 
+    }
+
+    /* Cuando el cuerpo tenga la clase .day, cambia a las imágenes de día */
+    body.day .icon-dog-left { 
+      background-image: url("modo_claro.PNG"); 
+    }
+
+    body.day .icon-dog-right { 
+      background-image: url("modo_claro.PNG"); 
+    }
+
+    .rotate { 
+      transform: rotate(360deg); 
+    }
+
+    /* ======= Barras laterales ======= */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 5rem;
+      height: 120vh;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 1rem 0;
+      gap: 3rem;
+    }
+
+    .sidebar.left { 
+      border-right: 0.125rem solid rgba(255, 255, 255, 0.2); 
+    }
+
+    .sidebar.right { 
+      border-left: 0.125rem solid rgba(255, 255, 255, 0.2); 
+    }
+
+    .sidebar img {
+      width: 3rem;
+      height: 3rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .sidebar img:hover {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+
+    /* CONTENIDO CENTRAL */
+    .central-container {
+      width: 60%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .titulo {
+      margin-top: -6rem;
+      font-size: 2rem;
+      margin-bottom: 7rem;
+      font-weight: 700;
+    }
+
+    /* ICONO CENTRAL ROTATORIO */
+    .icono-principal {
+      width: 7rem;
+      height: 7rem;
+      margin-bottom: 1.5rem;
+      transition: opacity .4s ease;
+    }
+
+    .navegacion {
+      display: flex;
+      gap: 8rem;
+      margin-bottom: 1rem;
+    }
+
+    .navegacion button {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      font-size: 2rem;
+      border-radius: 50%;
+      width: 3rem; height: 3rem;
+      cursor: pointer;
+      color: white;
+    }
+
+    .navegacion button:hover { background: rgba(255,255,255,0.4); }
+
+    /* FORMULARIO */
+    .form-box {
+      width: 70%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-box label { text-align: left; font-size: 1.2rem; }
+
+    .form-box input, .form-box select {
+      height: 2.5rem;
+      padding: .4rem;
+      border-radius: .3rem;
+      border: none;
+      font-size: 1rem;
+    }
+
+    body.day .form-box input, body.day .form-box select {
+      background: white; color: #013129;
+    }
+
+    body:not(.day) .form-box input, body:not(.day) .form-box select {
+      background: #eaeaea; color: black;
+    }
+
+    /* === Botones modo día/noche === */
+    .mode-toggle {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+      z-index: 9999; /* más alto que cualquier otro elemento */
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .mode-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      pointer-events: auto;
+      background-size: cover;
+      background-color: transparent;
+      transition: transform 0.3s ease;
+    }
+
+    .mode-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .sun:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 1rem 1rem rgb(11, 153, 136);
+      background-color: rgb(11, 153, 136);
+      border: 0.125rem solid rgb(165, 157, 0);
+    }
+    
+    .moon:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 1rem 1rem #013129;
+      background-color: #013129;
+      border: 0.125rem solid #000351;
+    }
+    
+    .moon {
+      background-image: url("https://cdn-icons-png.flaticon.com/512/581/581601.png");
+    }
+
+    .sun {
+      background-image: url("https://cdn-icons-png.flaticon.com/512/869/869869.png");
+    }
+
+    /* ANIMACIÓN DE ROTACIÓN */
+    .giro {
+      animation: spin 0.6s ease forwards;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg) scale(1); }
+      to   { transform: rotate(360deg) scale(1.05); }
+    }
+
+    /* ===========================
+    CARRUSEL CIRCULAR REAL
+    =========================== */
+
+    .carrusel-circular {
+      position: relative;
+      width: 2.25rem;
+      height: 12rem;
+      margin-bottom: 0rem;
+    }
+    
+    .icono-circular {
+      position: absolute;
+      width: 4rem;
+      height: 4rem;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.8s ease;
+    }
+    
+    .icono-circular img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Posiciones iniciales en círculo */
+    #icon1 { transform: translate(0, -6rem); }      /* Arriba */
+    #icon2 { transform: translate(6rem, 0); }       /* Derecha */
+    #icon3 { transform: translate(0, 6rem); }       /* Abajo */
+    #icon4 { transform: translate(-6rem, 0); }      /* Izquierda */
+
+    #tarjeta-mascota {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .tarjeta {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 1rem;
+      padding: 1rem 1.5rem;
+      width: 20rem;
+      box-shadow: 0 0 1rem rgba(0,0,0,0.3);
+      backdrop-filter: blur(0.3rem);
+      transition: transform 0.4s ease, background 0.4s ease;
+    }
+
+    body.day .tarjeta {
+      background: rgba(0, 0, 0, 0.1);
+      color: #013129;
+    }
+
+    .tarjeta:hover {
+      transform: scale(1.03);
+    }
+
+    .tarjeta img {
+      width: 6rem;
+      height: 6rem;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 1rem;
+      border: 2px solid white;
+    }
+
+    .tarjeta-info h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .tarjeta-info p {
+      margin: 0.2rem 0;
+      font-size: 0.9rem;
+    }
+
+    /* 📱 Responsive */
+    @media (max-width: 48rem) {
+      body {
+        flex-direction: column;
+      }
+
+      .logo-dog-hospital {
+        left: 1rem;
+        top: 5rem;
+        font-size: 1.6rem;
+      }
+
+      .sidebar {
+        flex-direction: row;
+        width: 100%;
+        height: auto;
+        padding: 0.5rem 0;
+      }
+
+      .sidebar.left,
+      .sidebar.right {
+        border: none;
+      }
+
+      .main-content {
+        order: -1;
+        flex: none;
+      }
+      .titulo {
+      margin-top: 3.5rem;
+      font-size: 2rem;
+      margin-bottom: 7rem;
+      font-weight: 700;
+    }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="icon-dog-left"></div>
+  <div class="icon-dog-right"></div>
+
+  <!-- Panel lateral izquierdo -->
+  <div class="sidebar left">
+    <a href="consultas.html"><img src="consultas.png" alt="Consultas"></a>
+    <a href="citas.html"><img src="citas.png"></a>
+    <a href="qr_recoleccion.html"><img src="QR-DOG-HOSPITAL-463451.png" alt="QR y Código"></a>
+  </div>
+
+  <!-- 🔆 Botones de modo -->
+      <div class="mode-toggle">
+        <button class="mode-btn moon" id="night-mode" title="Modo noche"></button>
+        <button class="mode-btn sun" id="day-mode" title="Modo día"></button>
+      </div>
+
+  <!-- CENTRAL -->
+   <div class="logo-dog-hospital">
+      <span class="dog-word">DOG</span> <span class="hospital-word">HOSPITAL</span>
+    </div>
+
+  <div class="central-container">
+    <div class="titulo">Consultas</div>
+
+    <!-- ICONO CENTRAL QUE ROTA -->
+    <div class="carrusel-circular">
+      <div class="icono-circular" id="icon1"><img src="icon1.png"></div>
+      <div class="icono-circular" id="icon2"><img src="icon2.png"></div>
+      <div class="icono-circular" id="icon3"><img src="icon3.png"></div>
+      <div class="icono-circular" id="icon4"><img src="icon4.png"></div>
+    </div>
+
+    <div class="navegacion">
+      <button id="prev">&#8592;</button>
+      <button id="next">&#8594;</button>
+    </div>
+
+    <div class="form-box">
+      <label>Veterinarias:</label>
+      <select id="select-veterinaria">
+        <option value="">Selecciona una veterinaria</option>
+      </select>
+
+
+      <label>Calendario:</label>
+      <input type="date">
+
+      <label>Servicio de la cita:</label>
+      <select id="select-servicio">
+        <option>Consulta general</option>
+        <option>Vacunación</option>
+        <option>Estética</option>
+        <option>Desparasitación</option>
+      </select>
+
+      <label>Seleccionar mascota:</label>
+      <select id="select-mascota">
+        <option>Cargando mascotas...</option>
+      </select>
+
+      <div class="botones-acciones" style="display:flex; gap:1rem; margin-top:2rem;">
+    <button id="btn-confirmar" 
+          style="flex:1; padding:0.8rem; background:#00bfa5; border:none; color:white; font-weight:bold; border-radius:0.5rem; cursor:pointer;">
+      Confirmar cita
+    </button>
+
+    <button id="btn-cancelar" 
+          style="flex:1; padding:0.8rem; background:#b71c1c; border:none; color:white; font-weight:bold; border-radius:0.5rem; cursor:pointer;">
+      Cancelar
+    </button>
+  </div>
+
+      <!-- Contenedor donde aparecerá la tarjeta -->
+      <div id="tarjeta-mascota"></div>
+    </div>
+  </div>
+
+  <!-- Panel lateral derecho -->
+  <div class="sidebar right">
+    <a href="perfil.html"><img src="perfil.png" alt="Perfil"></a>
+    <a href="mascotas.html"><img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Mascotas"></a>
+    <a href="index.html"><img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" alt="Cerrar Sesión"></a>
+  </div>
+
+  <script type="module" src="firebase.js" id="firebaseScript"></script>
+
+  <script>
+    document.getElementById("firebaseScript").addEventListener("load", () => {
+      const body = document.body;
+      const dayBtn = document.getElementById("day-mode");
+      const nightBtn = document.getElementById("night-mode");
+      const iconLeft = document.querySelector(".icon-dog-left");
+      const iconRight = document.querySelector(".icon-dog-right");
+
+    // ✅ Cambiar modo
+    dayBtn.addEventListener("click", () => {
+      body.classList.add("day");
+      localStorage.setItem("themeMode", "day");
+      rotateIcons();
+    });
+
+    nightBtn.addEventListener("click", () => {
+      body.classList.remove("day");
+      localStorage.setItem("themeMode", "night");
+      rotateIcons();
+    });
+    
+    // ✅ Aplicar modo guardado
+    const savedMode = localStorage.getItem("themeMode");
+    if (savedMode === "day") body.classList.add("day");
+    
+    function rotateIcons() {
+      iconLeft.classList.add("rotate");
+      iconRight.classList.add("rotate");
+
+      setTimeout(() => {
+        iconLeft.classList.remove("rotate");
+        iconRight.classList.remove("rotate");
+      }, 800);
+    } 
+
+    /* ===========================
+       CARRUSEL CIRCULAR REAL
+    =========================== */
+
+    const posiciones = [
+      "translate(6rem, 0)",      // Derecha
+      "translate(0, 6rem)",      // ABAJO (icono destacado)
+      "translate(-6rem, 0)",     // Izquierda
+      "translate(0, -6rem)"      // Arriba
+    ];
+
+    const iconos = [
+      document.getElementById("icon1"),
+      document.getElementById("icon2"),
+      document.getElementById("icon3"),
+      document.getElementById("icon4")
+    ];
+
+    let indice = 0;
+
+    function actualizarPosiciones() {
+      for (let i = 0; i < iconos.length; i++) {
+        const posIndex = (i + indice) % posiciones.length;
+        iconos[i].style.transform = posiciones[posIndex];
+
+        // Tamaño normal
+        iconos[i].style.transition = "transform 0.8s ease";
+
+        // Icono destacado (posición inferior)
+        if (posIndex === 1) {
+          iconos[i].style.transform += " scale(1.4)";
+          iconos[i].style.zIndex = "10";   // lo trae al frente
+        } else {
+          iconos[i].style.transform += " scale(1)";
+          iconos[i].style.zIndex = "1";
+        }
+      }
+    }
+
+    const servicios = {
+      "icon1.png": "Consulta general",
+      "icon2.png": "Vacunación",
+      "icon3.png": "Estética",
+      "icon4.png": "Desparasitación"
+    };
+
+    // Inversa: SERVICIO → Ícono correspondiente
+    const servicioAIcono = {
+      "Consulta general": "icon1.png",
+      "Vacunación": "icon2.png",
+      "Estética": "icon3.png",
+      "Desparasitación": "icon4.png"
+    };
+
+    document.getElementById("next").onclick = () => {
+      indice = (indice + 1) % posiciones.length;
+      actualizarPosiciones();
+      actualizarServicioPorCarrusel();  // ✅ NUEVO
+    };
+
+    document.getElementById("prev").onclick = () => {
+      indice = (indice - 1 + posiciones.length) % posiciones.length;
+      actualizarPosiciones();
+      actualizarServicioPorCarrusel();  // ✅ NUEVO
+    };
+
+    /* ===========================
+   ACTUALIZAR SERVICIO SEGÚN CARRUSEL
+    =========================== */
+
+    const selectServicio = document.getElementById("select-servicio");
+
+    function actualizarServicioPorCarrusel() {
+      // Buscar cuál icono está en la posición inferior (posIndex === 1)
+      let iconoDestacado;
+
+      for (let i = 0; i < iconos.length; i++) {
+        const posIndex = (i + indice) % posiciones.length;
+        if (posIndex === 1) {
+          iconoDestacado = iconos[i];
+          break;
+        }
+      }
+
+      if (!iconoDestacado) return;
+
+      const archivo = iconoDestacado.querySelector("img").src.split("/").pop();
+
+      // Cambiar el servicio según el icono
+      selectServicio.value = servicios[archivo];
+    }
+    
+    // Posiciona primero los iconos en el carrusel
+    actualizarPosiciones();
+
+    // ✅ Forzar icono1 a quedar abajo (posición destacada)
+    moverCarruselAIcono("icon1.png");
+
+    // Ahora sí: asigna el servicio real del icono superior
+    setTimeout(() => {
+      actualizarServicioPorCarrusel();
+    }, 50);
+
+    function moverCarruselAIcono(nombreArchivo) {
+      // encuentra cuál icono tiene esa imagen
+      const indexObj = iconos.findIndex(icon => 
+        icon.querySelector("img").src.includes(nombreArchivo)
+      );
+
+      if (indexObj === -1) return; // imagen no encontrada
+
+      // Queremos que quede en posIndex === 1
+      indice = (1 - indexObj + posiciones.length) % posiciones.length;
+
+      actualizarPosiciones();
+      actualizarServicioPorCarrusel();
+    }
+
+    selectServicio.addEventListener("change", () => {
+      const servicioSeleccionado = selectServicio.value;
+      const icono = servicioAIcono[servicioSeleccionado];
+
+      moverCarruselAIcono(icono);
+    });
+
+    /* ========================
+   LLENAR MASCOTAS Y MOSTRAR TARJETA
+    ======================== */
+    const selectMascota = document.getElementById("select-mascota");
+    const tarjetaMascota = document.getElementById("tarjeta-mascota");
+
+    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    const usuarioActivo = JSON.parse(localStorage.getItem("usuarioActivo"));
+
+    function cargarMascotas() {
+      selectMascota.innerHTML = "";
+
+      if (!usuarioActivo) {
+        selectMascota.innerHTML = "<option>Sin usuario</option>";
+        return;
+      }
+
+      // ✅ Detecta automáticamente si usas "email" o "correo"
+      const user = usuarios.find(u => 
+        (u.email && usuarioActivo.email && u.email === usuarioActivo.email) ||
+        (u.correo && usuarioActivo.correo && u.correo === usuarioActivo.correo)
+      );
+
+      if (!user || !user.mascotas || user.mascotas.length === 0) {
+        selectMascota.innerHTML = "<option>No hay mascotas registradas</option>";
+        return;
+      }
+
+      // ✅ Opción inicial abajo
+      const opcionInicial = document.createElement("option");
+      opcionInicial.value = "";
+      opcionInicial.textContent = "Selecciona una mascota";
+      selectMascota.appendChild(opcionInicial);
+
+      // ✅ SOLO UNA VEZ: agregar mascotas
+      user.mascotas.forEach(m => {
+        const option = document.createElement("option");
+        option.value = m.nombre;
+        option.textContent = `${m.nombre} — ${m.mascota} (${m.raza})`;
+        selectMascota.appendChild(option);
+      });
+
+      // ✅ Listener fuera del for
+      selectMascota.addEventListener("change", e => {
+        const nombre = e.target.value;
+        const mascota = user.mascotas.find(m => m.nombre === nombre);
+        mostrarTarjetaMascota(mascota);
+      });
+    }
+
+    function mostrarTarjetaMascota(m) {
+      if (!m) {
+        tarjetaMascota.innerHTML = "";
+        return;
+      }
+
+      tarjetaMascota.innerHTML = `
+        <div class="tarjeta">
+          <img src="${m.foto || "https://cdn-icons-png.flaticon.com/512/616/616408.png"}" alt="${m.nombre}">
+          <div class="tarjeta-info">
+            <h3>${m.nombre}</h3>
+            <p><strong>Tipo:</strong> ${m.mascota}</p>
+            <p><strong>Raza:</strong> ${m.raza}</p>
+            <p><strong>Edad:</strong> ${m.edad ? m.edad + " años" : "No registrada"}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    cargarMascotas();
+
+    /* ========================
+       LISTA DE VETERINARIAS
+    ======================== */
+    const veterinarias = [
+      "Dog Hospital Centro",
+      "Dog Hospital Revolución",
+      "Clínica AnimalCare",
+      "Veterinaria El Arca",
+      "VetExpress",
+      "PetLife Hospital",
+      "Huellitas Clínica",
+      "Mundo Animal",
+      "Mi Vet MX",
+      "Animal Home"
+    ];
+
+    /* ========================
+       LLENAR VETERINARIAS DINÁMICAMENTE
+    ======================== */
+    const selectVet = document.getElementById("select-veterinaria");
+
+    function cargarVeterinarias() {
+      selectVet.innerHTML = '<option value="">Selecciona una veterinaria</option>';
+
+      veterinarias.forEach(v => {
+        const option = document.createElement("option");
+        option.value = v;
+        option.textContent = v;
+        selectVet.appendChild(option);
+      });
+    }
+
+    cargarVeterinarias();
+
+    /* ============================
+         BOTÓN CONFIRMAR CITA
+    ============================ */
+    document.getElementById("btn-confirmar").addEventListener("click", async () => {
+
+  const vet = selectVet.value;
+  const fecha = document.querySelector('input[type="date"]').value;
+  const servicio = selectServicio.value;
+  const mascotaNombre = selectMascota.value;
+
+  if (!vet || !fecha || !servicio || !mascotaNombre) {
+    alert("❗ Debes completar todos los campos para confirmar la cita.");
+    return;
+  }
+
+  // ✅ Obtener la mascota completa desde usuarioActivo
+  const usuarioActivo = JSON.parse(localStorage.getItem("usuarioActivo"));
+  const mascotaObj = usuarioActivo.mascotas.find(m => m.nombre === mascotaNombre);
+
+  if (!mascotaObj) {
+    alert("❌ Error: No se encontró la mascota seleccionada.");
+    return;
+  }
+
+  // ✅ Preparar datos para Firebase
+  const cita = {
+  veterinaria: vet,
+  fecha: fecha,
+  servicio: servicio,
+  iconoServicio: servicioAIcono[servicio], // ✅ guarda el ícono del servicio
+  mascota: {
+    id: mascotaObj.id,
+    nombre: mascotaObj.nombre,
+    tipo: mascotaObj.mascota,
+    raza: mascotaObj.raza,
+    edad: mascotaObj.edad,
+    foto: mascotaObj.foto || "https://cdn-icons-png.flaticon.com/512/616/616408.png" // ✅ guarda foto
+  },
+  creada: new Date().toISOString()
+};
+
+  try {
+    // ✅ Guardar en Firebase
+    await firebaseDog.registrarCita(usuarioActivo.email, cita);
+    console.log("✅ Cita guardada en Firebase:", cita);
+
+    alert("✅ ¡Cita confirmada correctamente!");
+
+    // Redirigir
+    window.location.href = "citas.html";
+
+  } catch (error) {
+    console.error("❌ Error guardando cita en Firebase:", error);
+    alert("Ocurrió un error al guardar la cita.");
+  }
+});
+
+    /* ============================
+       BOTÓN CANCELAR CITA
+    ============================ */
+    document.getElementById("btn-cancelar").addEventListener("click", () => {
+
+      // Resetear selects y fecha
+      selectVet.value = "";
+      document.querySelector('input[type="date"]').value = "";
+      selectServicio.value = "Consulta general";
+      selectMascota.value = "";
+      tarjetaMascota.innerHTML = "";
+
+      // Reiniciar carrusel para que "Consulta general" quede abajo
+      moverCarruselAIcono("icon1.png");
+
+      alert("Cita cancelada. Todo se ha restablecido.");
+    });
+    });
+  </script>
+</body>
+</html>

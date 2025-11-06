@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dog Hospital - Perfil</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: max-content;
+      margin: 0;
+      background: linear-gradient(120deg, #013129 100%);
+      color: white;
+      transition: background 0.5s ease, color 0.5s ease;
+    }
+
+    body.day {
+      background: linear-gradient(120deg, rgb(11, 153, 136) 100%);
+      color: #013129;
+    }
+
+    .logo-dog-hospital {
+      position: absolute;
+      top: 1rem;
+      left: calc(5rem + 1.5rem); /* 5rem = ancho sidebar izquierda */
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      z-index: 1000;
+      user-select: none;
+    }
+
+    /* Color inicial (modo oscuro) */
+    .dog-word {
+      color: #00e6c2;   /* un turquesa brillante */
+      transition: color 0.5s ease;
+    }
+
+    /* Cuando el modo día está activo: cambiar DOG a otro color */
+    body.day .dog-word {
+      color: #013129;  /* verde oscuro */
+    }
+
+    .hospital-word {
+      color: white;
+    }
+
+    .icon-dog-left,
+    .icon-dog-right {
+      position: absolute;
+      top: 1rem;
+      width: 3rem;
+      height: 3rem;
+      background-size: contain;
+      background-repeat: no-repeat;
+      transition: transform 0.8s ease;
+    }
+
+    .icon-dog-left {
+      left: 1rem;
+      background-image: url("modo_oscuro.PNG");
+    }
+
+    .icon-dog-right {
+      right: 1rem;
+      background-image: url("modo_oscuro.PNG");
+    }
+
+    /* Cuando el cuerpo tenga la clase .day, cambia a las imágenes de día */
+    body.day .icon-dog-left {
+      background-image: url("modo_claro.PNG");
+    }
+
+    body.day .icon-dog-right {
+      background-image: url("modo_claro.PNG");
+    }
+
+    .rotate {
+      transform: rotate(360deg);
+    }
+
+    /* ======= Barras laterales ======= */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 5rem;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 1rem 0;
+      gap: 3rem;
+    }
+
+    .sidebar.left {
+      border-right: 0.125rem solid rgba(255, 255, 255, 0.2);
+    }
+
+    .sidebar.right {
+      border-left: 0.125rem solid rgba(255, 255, 255, 0.2);
+    }
+
+    .sidebar img {
+      width: 3rem;
+      height: 3rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .sidebar img:hover {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+
+    /* ===== Contenido principal ===== */
+    .main-content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .profile-container {
+      width: 84%;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 2.5rem;
+      border-radius: 1.25rem;
+      backdrop-filter: blur(0.5rem);
+      box-shadow: 0 0.25rem 1.5rem rgba(0, 0, 0, 0.5);
+      text-align: center;
+      position: relative;
+      transition: background 0.5s ease, color 0.5s ease;
+    }
+
+    h2 {
+      margin-bottom: 1.25rem;
+      font-size: 1.8em;
+      text-transform: uppercase;
+      letter-spacing: 0.0625rem;
+    }
+
+    .profile-pic {
+      width: 7.5rem;
+      height: 7.5rem;
+      border-radius: 50%;
+      background: #e0f2f1;
+      margin: 0 auto 1.25rem;
+      overflow: hidden;
+      border: 0 solid #00695c;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .profile-pic:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 1rem #00bfa5;
+    }
+
+    .profile-pic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+      min-width: 12rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.3125rem;
+      font-size: 0.9em;
+      color: #c8e6c9;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.625rem;
+      border: none;
+      border-radius: 0.625rem;
+      outline: none;
+      text-align: center;
+    }
+
+    .btn {
+      width: 50%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 0.625rem;
+      margin-top: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .save-btn {
+      background-color: #00695c;
+      color: white;
+    }
+
+    .save-btn:hover {
+      background-color: #004d40;
+    }
+
+    #uploadInput {
+      display: none;
+    }
+
+    .footer {
+      margin-top: 1.5rem;
+      font-size: 0.8em;
+      opacity: 0.7;
+    }
+
+    /* === Botones modo día/noche === */
+    .mode-toggle {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+      z-index: 9999; /* más alto que cualquier otro elemento */
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .mode-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      pointer-events: auto;
+      background-size: cover;
+      background-color: transparent;
+      transition: transform 0.3s ease;
+    }
+
+    .mode-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .moon {
+      background-image: url("https://cdn-icons-png.flaticon.com/512/581/581601.png");
+    }
+
+    .sun {
+      background-image: url("https://cdn-icons-png.flaticon.com/512/869/869869.png");
+    }
+
+    .sun:hover {
+      box-shadow: 0 0 1rem 1rem rgb(11, 153, 136);
+      background-color: rgb(11, 153, 136);
+      border: 0.125rem solid rgb(165, 157, 0);
+    }
+
+    .moon:hover {
+      box-shadow: 0 0 1rem 1rem #013129;
+      background-color: #013129;
+      border: 0.125rem solid #000351;
+    }
+
+    /* 📱 Responsive */
+    @media (max-width: 48rem) {
+      body {
+        flex-direction: column;
+      }
+
+      .logo-dog-hospital {
+        left: 1rem;
+        top: 5rem;
+        font-size: 1.6rem;
+      }
+
+      .sidebar {
+        flex-direction: row;
+        width: 100%;
+        height: auto;
+        padding: 0.5rem 0;
+      }
+
+      .sidebar.left,
+      .sidebar.right {
+        border: none;
+      }
+
+      .main-content {
+        margin-top: 8rem;
+        order: -1;
+        flex: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  
+  <div class="icon-dog-left"></div>
+  <div class="icon-dog-right"></div>
+
+  <!-- 🔹 Panel lateral izquierdo -->
+  <div class="sidebar left">
+    <a href="consultas.html"><img src="consultas.png" alt="Consultas"></a>
+    <a href="citas.html"><img src="citas.png"></a>
+    <a href="qr_recoleccion.html"><img src="QR-DOG-HOSPITAL-463451.png" alt="QR y Código"></a>
+  </div>
+
+  <!-- 🔆 Botones de modo -->
+      <div class="mode-toggle">
+        <button class="mode-btn moon" id="night-mode" title="Modo noche"></button>
+        <button class="mode-btn sun" id="day-mode" title="Modo día"></button>
+      </div>
+
+  <!-- 🔹 Contenedor principal -->
+  <div class="logo-dog-hospital">
+      <span class="dog-word">DOG</span> <span class="hospital-word">HOSPITAL</span>
+    </div>
+
+  <div class="main-content">
+    <div class="profile-container">
+      <h2>Mi Perfil 👤</h2>
+
+      <label for="uploadInput" class="profile-pic" id="profilePic">
+        <img id="profileImage" src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Foto de perfil">
+      </label>
+      <input type="file" id="uploadInput" accept="image/*">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Nombre(s)</label>
+          <input type="text" id="name" placeholder="Tu nombre">
+        </div>
+
+        <div class="form-group">
+          <label for="apellidop">Apellido paterno</label>
+          <input type="text" id="apellidop" placeholder="1er Apellido">
+        </div>
+
+        <div class="form-group">
+          <label for="apellidom">Apellido materno</label>
+          <input type="text" id="apellidom" placeholder="2do Apellido">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="telefono">Telefono</label>
+          <input type="text" id="telefono" placeholder="Ejemplo: +52 0123456789">
+        </div> 
+
+        <div class="form-group">
+          <label for="email">Correo electrónico</label>
+          <input type="email" id="email" placeholder="Ejemplo: usuario@correo.com" disabled>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="estado">Estado</label>
+          <input type="text" id="estado" placeholder="Ejemplo: Nuevo Leon">
+        </div>
+
+        <div class="form-group">
+          <label for="municipio">Municipio</label>
+          <input type="text" id="municipio" placeholder="Ejemplo: Guadalupe">
+        </div>
+
+        <div class="form-group">
+          <label for="colonia">Colonia</label>
+          <input type="text" id="colonia" placeholder="Ejemplo: Centro de Guadalupe">
+        </div>
+      </div>
+    
+      <div class="form-row">
+        <div class="form-group">
+          <label for="calle">Calle</label>
+          <input type="text" id="calle" placeholder="Ejemplo: Av.Benito Juárez #123">
+        </div>
+
+        <div class="form-group">
+          <label for="postal">Código postal</label>
+          <input type="text" id="postal" placeholder="Ejemplo: 67100">
+        </div>
+      </div>
+
+      <button class="btn save-btn" id="saveChanges">Guardar cambios</button>
+
+      <div class="footer">© 2025 Dog Hospital</div>
+    </div>
+  </div>
+
+  <!-- 🔹 Panel lateral derecho -->
+  <div class="sidebar right">
+    <a href="perfil.html"><img src="perfil.png" alt="Perfil"></a>
+    <a href="mascotas.html"><img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Mascotas"></a>
+    <a href="index.html"><img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" alt="Cerrar Sesión"></a>
+  </div>
+
+  <script type="module" src="firebase.js" id="firebaseScript"></script>
+
+  <script>
+    document.getElementById("firebaseScript").addEventListener("load", () => {
+    const body = document.body;
+    // ✅ Usuario que inició sesión
+    const usuarioActivo = JSON.parse(localStorage.getItem("usuarioActivo"));
+    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    const dayBtn = document.getElementById("day-mode");
+    const nightBtn = document.getElementById("night-mode");
+    const iconLeft = document.querySelector(".icon-dog-left");
+    const iconRight = document.querySelector(".icon-dog-right");
+
+    const nameInput = document.getElementById("name");
+    const apellidopInput = document.getElementById("apellidop");
+    const apellidomInput = document.getElementById("apellidom");
+    const telefonoInput = document.getElementById("telefono");
+    const emailInput = document.getElementById("email");
+    const estadoInput = document.getElementById("estado");
+    const municipioInput = document.getElementById("municipio");
+    const coloniaInput = document.getElementById("colonia");
+    const calleInput = document.getElementById("calle");
+    const postalInput = document.getElementById("postal");
+    const profileImage = document.getElementById("profileImage");
+    const uploadInput = document.getElementById("uploadInput");
+
+    // ✅ Verificar sesión
+    if (!usuarioActivo) {
+      alert("Debes iniciar sesión primero.");
+      window.location.href = "index.html";
+    }
+
+    // ✅ ✅ ✅ CARGAR PERFIL DESDE FIREBASE
+    async function cargarPerfil() {
+
+        const datosFirebase = await window.firebaseDog.cargarUsuario(usuarioActivo.email);
+        console.log("📥 Datos obtenidos de Firebase:", datosFirebase);
+
+        const datos = datosFirebase || usuarioActivo;
+
+        // ✅ Rellenar todos los campos
+        nameInput.value = datos.nombre || "";
+        apellidopInput.value = datos.apellidop || "";
+        apellidomInput.value = datos.apellidom || "";
+        telefonoInput.value = datos.telefono || "";
+        emailInput.value = datos.email || "";
+        estadoInput.value = datos.estado || "";
+        municipioInput.value = datos.municipio || "";
+        coloniaInput.value = datos.colonia || "";
+        calleInput.value = datos.calle || "";
+        postalInput.value = datos.postal || "";
+
+        if (datos.foto) {
+            profileImage.src = datos.foto;
+        }
+
+        // ✅ Actualizar localStorage
+        Object.assign(usuarioActivo, datos);
+        const i = usuarios.findIndex(u => u.email === usuarioActivo.email);
+        if (i !== -1) usuarios[i] = usuarioActivo;
+
+        localStorage.setItem("usuarios", JSON.stringify(usuarios));
+        localStorage.setItem("usuarioActivo", JSON.stringify(usuarioActivo));
+    }
+
+    cargarPerfil();
+
+    // ✅ ✅ ✅ GUARDAR CAMBIOS EN FIREBASE + LOCALSTORAGE
+    document.getElementById("saveChanges").addEventListener("click", async () => {
+
+        usuarioActivo.nombre = nameInput.value;
+        usuarioActivo.apellidop = apellidopInput.value;
+        usuarioActivo.apellidom = apellidomInput.value;
+        usuarioActivo.telefono = telefonoInput.value;
+        usuarioActivo.email = emailInput.value;
+        usuarioActivo.estado = estadoInput.value;
+        usuarioActivo.municipio = municipioInput.value;
+        usuarioActivo.colonia = coloniaInput.value;
+        usuarioActivo.calle = calleInput.value;
+        usuarioActivo.postal = postalInput.value;
+
+        // ✅ Foto actual
+        usuarioActivo.foto = profileImage.src;
+
+        // ✅ Guardar en Firestore
+        await window.firebaseDog.actualizarUsuario(usuarioActivo.email, usuarioActivo);
+
+        // ✅ Guardar en localStorage
+        const index = usuarios.findIndex(u => u.email === usuarioActivo.email);
+        if (index !== -1) {
+            usuarios[index] = usuarioActivo;
+            localStorage.setItem("usuarios", JSON.stringify(usuarios));
+            localStorage.setItem("usuarioActivo", JSON.stringify(usuarioActivo));
+        }
+
+        alert("✅ Cambios guardados correctamente (Firebase + LocalStorage)");
+    });
+
+    // ✅ ✅ ✅ ACTUALIZAR FOTO EN STORAGE Y FIREBASE
+    uploadInput.addEventListener("change", async (event) => {
+
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // ✅ Mostrar vista previa inmediata
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            profileImage.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+
+        // ✅ Subir a Firebase Storage
+        const safeID = window.firebaseDog.safeEmailID(usuarioActivo.email);
+        const ruta = `usuarios/${safeID}/foto_perfil.jpg`;
+        const url = await window.firebaseDog.subirFoto(ruta, file);
+
+        // ✅ Actualizar URL en Firestore
+        usuarioActivo.foto = url;
+        await window.firebaseDog.actualizarUsuario(usuarioActivo.email, { foto: url });
+
+        localStorage.setItem("usuarioActivo", JSON.stringify(usuarioActivo));
+
+        alert("✅ Foto de perfil actualizada");
+    });
+
+    // ✅ Aplicar modo guardado
+    const savedMode = localStorage.getItem("themeMode");
+    if (savedMode === "day") body.classList.add("day");
+
+    // ✅ Cambiar modo
+    dayBtn.addEventListener("click", () => {
+      body.classList.add("day");
+      localStorage.setItem("themeMode", "day");
+      rotateIcons();
+    });
+
+    nightBtn.addEventListener("click", () => {
+      body.classList.remove("day");
+      localStorage.setItem("themeMode", "night");
+      rotateIcons();
+    });
+
+    function rotateIcons() {
+      iconLeft.classList.add("rotate");
+      iconRight.classList.add("rotate");
+
+      setTimeout(() => {
+        iconLeft.classList.remove("rotate");
+        iconRight.classList.remove("rotate");
+      }, 800);
+    }
+    });
+  </script>
+</body>
+</html>
